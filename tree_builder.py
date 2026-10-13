@@ -6,9 +6,11 @@ class EmployeeNode:
         left (EmployeeNode): The left child node, representing the left subordinate.
         right (EmployeeNode): The right child node, representing the right subordinate.
     '''
-
-    # Delete this line and implement the class below
-    pass
+class EmployeeNode:
+    def __init__(self, name):
+        self.name = name
+        self.left = None
+        self.right = None
 
 class TeamTree:
     '''
@@ -20,20 +22,93 @@ class TeamTree:
         print_tree(node=None, level=0): Prints the tree structure starting from the given node.
 
     '''
-    
-    # Delete this line and implement the class below
-    pass
+class TeamTree:
+    def __init__(self):
+        self.root = None
+    def insert(self, manager_name, employee_name, side, current_node=None):
+        # Start searching at the root.
+        if current_node is None:
+            current_node = self.root
 
-# Test your code here
+        # The company must have a team lead first.
+        if current_node is None:
+            print("Error: Add a team lead first.")
+            return False
 
+        # Check whether this is the correct manager.
+        if current_node.name == manager_name:
+            side = side.lower()
 
+            if side == "left":
+                if current_node.left is not None:
+                    print("Error: The left side is already occupied.")
+                    return False
+                current_node.left = EmployeeNode(employee_name)
 
+            elif side == "right":
+                if current_node.right is not None:
+                    print("Error: The right side is already occupied.")
+                    return False
+                current_node.right = EmployeeNode(employee_name)
 
+            else:
+                print("Error: Side must be left or right.")
+                return False
 
+            return True
 
+        # Search the left and right branches recursively.
+        found = self._insert_search(
+            current_node.left, manager_name, employee_name, side
+        )
+        if found:
+            return True
 
+        found = self._insert_search(
+            current_node.right, manager_name, employee_name, side
+        )
+        if found:
+            return True
 
+        print(f"Error: Manager '{manager_name}' was not found.")
+        return False
 
+    def _insert_search(self, node, manager_name, employee_name, side):
+        # Stop if this branch is empty.
+        if node is None:
+            return False
+
+        # Insert if we found the manager.
+        if node.name == manager_name:
+            side = side.lower()
+
+            if side == "left":
+                if node.left is not None:
+                    print("Error: The left side is already occupied.")
+                    return False
+                node.left = EmployeeNode(employee_name)
+
+            elif side == "right":
+                if node.right is not None:
+                    print("Error: The right side is already occupied.")
+                    return False
+                node.right = EmployeeNode(employee_name)
+
+            else:
+                print("Error: Side must be left or right.")
+                return False
+
+            return True
+
+        # Keep searching both branches.
+        if self._insert_search(
+            node.left, manager_name, employee_name, side
+        ):
+            return True
+
+        return self._insert_search(
+            node.right, manager_name, employee_name, side
+        )
 # CLI functionality
 def company_directory():
     tree = TeamTree()
@@ -70,3 +145,20 @@ def company_directory():
             break
         else:
             print("❌ Invalid option. Try again.")
+
+
+    def print_tree(self, node=None, level=0):
+        # Start at the root when called normally.
+        if level == 0:
+            node = self.root
+
+        # Stop when a branch is empty.
+        if node is None:
+            return
+
+        # Print the employee with indentation.
+        print("  " * level + "- " + node.name)
+
+        # Print the left and right branches.
+        self.print_tree(node.left, level + 1)
+        self.print_tree(node.right, level + 1)
